@@ -12,27 +12,28 @@ public class Main {
     public static void main(String[] args) throws Exception{
 
 
-//        FacebookService fbService = new FacebookService();
-//        List<FacebookUser> fbUsers = new ArrayList<>();
-//
-//        createFbUser("@tsiprasalexis", fbUsers);
-//
-//        createFbUser("@cnninternational", fbUsers);
-//
-//        fbService.fetchAndStoreAllUsersPosts(fbUsers);
+       FacebookService fbService = new FacebookService();
+       List<FacebookUser> fbUsers = new ArrayList<>();
+        
+       createFbUser("@tsiprasalexis", fbUsers);
+       createFbUser("@cnninternational", fbUsers);
+       createFbUser("@financialtimes", fbUsers);
+       createFbUser("@GreekFreakOfficial", fbUsers);
+       createFbUser("helenapaparizouofficial", fbUsers);
+       fbService.fetchAndStoreAllUsersPosts(fbUsers);
 
+       TwitterService twitterService = new TwitterService();
+       List<TwitterUser> twitterUsers = new ArrayList<>();
+        
+       createTwitterUser("atsipras", twitterUsers);
+       createTwitterUser("cnni", twitterUsers);
+       createTwitterUser("FinancialTimes", twitterUsers);
+       createTwitterUser("Giannis_An34", twitterUsers);
+       createTwitterUser("paparizouhelena", twitterUsers); 
+       twitterService.fetchAndStoreAllUsersTweets(twitterUsers);
 
-        TwitterService twitterService = new TwitterService();
-        List<TwitterUser> twitterUsers = new ArrayList<>();
-
-        createTwitterUser("atsipras", twitterUsers);
-
-        createTwitterUser("cnni", twitterUsers);
-
-        twitterService.fetchAndStoreAllUsersTweets(twitterUsers);
-
-        SymposiumService symposiumService = new SymposiumService();
-        symposiumService.retrieveAndSaveSymposiumUser();
+       SymposiumService symposiumService = new SymposiumService();
+       symposiumService.retrieveAndSaveSymposiumUser();
 
     }
 
