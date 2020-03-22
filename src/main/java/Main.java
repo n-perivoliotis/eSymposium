@@ -1,8 +1,8 @@
-import com.perivoliotis.app.eSymposium.core.entities.FacebookUser;
-import com.perivoliotis.app.eSymposium.core.entities.TwitterUser;
-import com.perivoliotis.app.eSymposium.core.services.FacebookService;
-import com.perivoliotis.app.eSymposium.core.services.SymposiumService;
-import com.perivoliotis.app.eSymposium.core.services.TwitterService;
+import com.perivoliotis.app.eSymposium.entities.FacebookUser;
+import com.perivoliotis.app.eSymposium.entities.TwitterUser;
+import com.perivoliotis.app.eSymposium.services.FacebookService;
+import com.perivoliotis.app.eSymposium.services.SymposiumService;
+import com.perivoliotis.app.eSymposium.services.TwitterService;
 
 import java.util.ArrayList;
 import java.util.List;
