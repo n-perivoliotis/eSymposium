@@ -13,7 +13,7 @@ public static String readFromProperties(String propertyName){
 
     Properties prop = new Properties();
 
-    try (InputStream input = new FileInputStream("/home/nikos/Dev/Projects/eSymposium/src/main/resources/application-dev.properties")){
+    try (InputStream input = new FileInputStream("/home/nikos/Dev/Projects/eSymposium/src/main/resources/application.properties")){
 
         // load a properties file
         prop.load(input);

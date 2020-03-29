@@ -7,6 +7,7 @@
     <groupId>com.perivoliotis.app</groupId>
     <artifactId>eSymposium</artifactId>
     <version>2.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -21,10 +22,20 @@
         </dependency>
 
         <dependency>
-            <groupId>org.mongodb</groupId>
-            <artifactId>mongo-java-driver</artifactId>
-            <version>3.9.0</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-mongodb</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
+
+<!--        <dependency>-->
+<!--            <groupId>org.mongodb</groupId>-->
+<!--            <artifactId>mongo-java-driver</artifactId>-->
+<!--            <version>3.9.0</version>-->
+<!--        </dependency>-->
 
         <dependency>
             <groupId>org.twitter4j</groupId>
@@ -38,12 +49,12 @@
             <version>[4.0,)</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/org.mongodb.morphia/morphia -->
-        <dependency>
-            <groupId>org.mongodb.morphia</groupId>
-            <artifactId>morphia</artifactId>
-            <version>1.3.2</version>
-        </dependency>
+<!--        &lt;!&ndash; https://mvnrepository.com/artifact/org.mongodb.morphia/morphia &ndash;&gt;-->
+<!--        <dependency>-->
+<!--            <groupId>org.mongodb.morphia</groupId>-->
+<!--            <artifactId>morphia</artifactId>-->
+<!--            <version>1.3.2</version>-->
+<!--        </dependency>-->
 
         <!-- https://mvnrepository.com/artifact/org.seleniumhq.selenium/selenium-java -->
         <dependency>
@@ -60,16 +71,6 @@
 
     <build>
         <plugins>
-<!--            <plugin>-->
-<!--                <groupId>org.apache.maven.plugins</groupId>-->
-<!--                <artifactId>maven-compiler-plugin</artifactId>-->
-<!--                <version>3.8.0</version>-->
-<!--                <configuration>-->
-<!--                    &lt;!&ndash; or whatever version you use &ndash;&gt;-->
-<!--                    <source>1.8</source>-->
-<!--                    <target>1.8</target>-->
-<!--                </configuration>-->
-<!--            </plugin>-->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>

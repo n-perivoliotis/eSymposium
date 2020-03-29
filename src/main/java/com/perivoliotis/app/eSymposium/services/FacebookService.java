@@ -1,23 +1,20 @@
 package com.perivoliotis.app.eSymposium.services;
 
-import com.mongodb.MongoClient;
-import com.perivoliotis.app.eSymposium.DAOs.UserPostsDAO;
-import com.perivoliotis.app.eSymposium.entities.FacebookPost;
-import com.perivoliotis.app.eSymposium.entities.FacebookUser;
-import com.perivoliotis.app.eSymposium.entities.UserPosts;
+import com.perivoliotis.app.eSymposium.entities.facebook.FacebookPost;
+import com.perivoliotis.app.eSymposium.entities.facebook.FacebookUser;
+import com.perivoliotis.app.eSymposium.entities.facebook.UserPosts;
+import com.perivoliotis.app.eSymposium.repos.UserPostsRepository;
 import com.perivoliotis.app.eSymposium.utilities.FacebookUtils;
-import org.mongodb.morphia.Morphia;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
 public class FacebookService {
 
+    @Autowired
+    UserPostsRepository userPostsRepository;
 
     public void fetchAndStoreAllUsersPosts(List<FacebookUser> users) throws Exception{
-
-        MongoClient mongo = new MongoClient( "localhost" , 27017 );
-
-        UserPostsDAO userPostsDAO = new UserPostsDAO(new Morphia(), mongo, "eSymposiumDb");
 
         for (FacebookUser aUser : users){
 
@@ -28,17 +25,12 @@ public class FacebookService {
                 System.out.println(post.getDescriptionText());
             }
 
-            if(userPostsDAO.saveOrUpdate(usersPosts)){
+            if (userPostsRepository.saveOrUpdate(usersPosts)) {
                 System.out.println("Database successfully updated");
-            }else{
+            } else {
                 System.out.println("Some error occurred while trying to update database");
             }
         }
     }
-
-
-
-
-
 
 }

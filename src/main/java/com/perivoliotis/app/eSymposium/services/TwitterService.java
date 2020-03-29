@@ -1,21 +1,20 @@
 package com.perivoliotis.app.eSymposium.services;
 
-import com.mongodb.MongoClient;
-import com.perivoliotis.app.eSymposium.DAOs.UserTweetsDAO;
+import com.perivoliotis.app.eSymposium.entities.twitter.Tweet;
+import com.perivoliotis.app.eSymposium.entities.twitter.TwitterUser;
+import com.perivoliotis.app.eSymposium.entities.twitter.UserTweets;
+import com.perivoliotis.app.eSymposium.repos.UserTweetsRepository;
 import com.perivoliotis.app.eSymposium.utilities.TwitterUtils;
-import com.perivoliotis.app.eSymposium.entities.Tweet;
-import com.perivoliotis.app.eSymposium.entities.TwitterUser;
-import com.perivoliotis.app.eSymposium.entities.UserTweets;
-import org.mongodb.morphia.Morphia;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import java.util.List;
 
 public class TwitterService {
 
+    @Autowired
+    UserTweetsRepository userTweetsRepository;
+
     public void fetchAndStoreAllUsersTweets(List<TwitterUser> users) throws Exception{
-
-        MongoClient mongo = new MongoClient( "localhost" , 27017 );
-
-        UserTweetsDAO userTweetsDAO = new UserTweetsDAO(new Morphia(), mongo, "eSymposiumDb");
 
         for (TwitterUser aUser : users){
 
@@ -26,9 +25,9 @@ public class TwitterService {
                 System.out.println(tweet.getText());
             }
 
-            if(userTweetsDAO.saveOrUpdate(usersTweets)){
+            if (userTweetsRepository.saveOrUpdate(usersTweets)) {
                 System.out.println("Database successfully updated");
-            }else{
+            } else {
                 System.out.println("Some error occurred while trying to update database");
             }
         }

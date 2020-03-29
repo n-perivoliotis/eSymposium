@@ -1,8 +1,8 @@
 package com.perivoliotis.app.eSymposium.utilities;
 
-import com.perivoliotis.app.eSymposium.entities.Tweet;
-import com.perivoliotis.app.eSymposium.entities.TwitterUser;
-import com.perivoliotis.app.eSymposium.entities.UserTweets;
+import com.perivoliotis.app.eSymposium.entities.twitter.Tweet;
+import com.perivoliotis.app.eSymposium.entities.twitter.TwitterUser;
+import com.perivoliotis.app.eSymposium.entities.twitter.UserTweets;
 import twitter4j.*;
 
 import java.time.ZoneId;
@@ -30,7 +30,7 @@ public class TwitterUtils {
             handleRateLimit(((ResponseList<Status>) statuses).getRateLimitStatus());
 
             if (initialSize == 0 && !statuses.isEmpty() && statuses.get(0).getUser() != null){
-                userTweets.setaUser(toUser(statuses.get(0).getUser()));
+                userTweets.setAUser(toUser(statuses.get(0).getUser()));
             }
 
             allTweets.addAll(convertToTweet(statuses));

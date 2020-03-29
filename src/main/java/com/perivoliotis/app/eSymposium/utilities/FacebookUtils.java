@@ -1,8 +1,8 @@
 package com.perivoliotis.app.eSymposium.utilities;
 
-import com.perivoliotis.app.eSymposium.entities.FacebookPost;
-import com.perivoliotis.app.eSymposium.entities.FacebookUser;
-import com.perivoliotis.app.eSymposium.entities.UserPosts;
+import com.perivoliotis.app.eSymposium.entities.facebook.FacebookPost;
+import com.perivoliotis.app.eSymposium.entities.facebook.FacebookUser;
+import com.perivoliotis.app.eSymposium.entities.facebook.UserPosts;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
