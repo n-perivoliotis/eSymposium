@@ -1,11 +1,14 @@
-package com.perivoliotis.app.eSymposium.utilities;
+package com.perivoliotis.app.eSymposium.integration.clients;
 
 import com.perivoliotis.app.eSymposium.entities.facebook.FacebookPost;
 import com.perivoliotis.app.eSymposium.entities.facebook.FacebookUser;
 import com.perivoliotis.app.eSymposium.entities.facebook.UserPosts;
+import com.perivoliotis.app.eSymposium.integration.utilities.FacebookPageScrapper;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -13,18 +16,23 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class FacebookUtils {
+@Component
+public class FacebookClient {
 
-    public static UserPosts getAllFbPostsFromUser(String username) throws Exception{
+    @Value("${login.facebook.personal.account.email}")
+    private String email;
 
+    @Value("${login.facebook.personal.account.password}")
+    private String password;
+
+    public UserPosts getAllFbPostsFromUser(String username) throws Exception{
 
         UserPosts userPosts = new UserPosts();
 
         FacebookPageScrapper fbSrcapper = new FacebookPageScrapper();
 
         fbSrcapper.initializeWebDriver();
-        String email = ConfigurationUtils.readFromProperties("login.facebook.personal.account.email");
-        String password = ConfigurationUtils.readFromProperties("login.facebook.personal.account.password");
+
         fbSrcapper.goToFbHomepage(email, password);
 
         fbSrcapper.goToFbPageInfo(username);
@@ -44,7 +52,7 @@ public class FacebookUtils {
             List<WebElement> posts = fbSrcapper.extractOncePosts();
 
             for(WebElement post:posts){
-                allUserPosts.add(FacebookUtils.toPost(post));
+                allUserPosts.add(toPost(post));
             }
             fbSrcapper.scrollDownPage();
             Thread.sleep(6000);
@@ -59,7 +67,7 @@ public class FacebookUtils {
         return userPosts;
     }
 
-    public static FacebookUser fetchFbUser(WebDriver driver) throws Exception{
+    private FacebookUser fetchFbUser(WebDriver driver) throws Exception{
 
         FacebookUser fbUser = new FacebookUser();
 
@@ -85,7 +93,7 @@ public class FacebookUtils {
         return fbUser;
     }
 
-    public static FacebookPost toPost(WebElement postHtml) throws Exception{
+    private FacebookPost toPost(WebElement postHtml) throws Exception{
 
         FacebookPost fbPost = new FacebookPost();
 
@@ -123,7 +131,7 @@ public class FacebookUtils {
         return fbPost;
     }
 
-    private static int uiNumberToInt(String reac){
+    private int uiNumberToInt(String reac){
 
         int result = 0;
 
@@ -150,7 +158,7 @@ public class FacebookUtils {
         return result;
     }
 
-    private static String keepUsefulInfo(String reac){
+    private String keepUsefulInfo(String reac){
 
         Pattern pattern = Pattern.compile("\\d+ [Α-Ωα-ω]+\\.");
         Matcher matcher = pattern.matcher(reac);
@@ -167,7 +175,7 @@ public class FacebookUtils {
         return reac;
     }
 
-    private static String removeComments(String commentsNum){
+    private String removeComments(String commentsNum){
 
         if(commentsNum.contains("σχόλια")){
             return commentsNum.replaceAll("σχόλια", "");
@@ -179,7 +187,7 @@ public class FacebookUtils {
 
     }
 
-    private static LocalDateTime toDate(String dateStr) {
+    private LocalDateTime toDate(String dateStr) {
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yy, h:mm a");
 
@@ -196,7 +204,7 @@ public class FacebookUtils {
         }
     }
 
-    private static List<String> findResource(List<WebElement> elements, String attribute){
+    private List<String> findResource(List<WebElement> elements, String attribute){
 
         List<String> resource = new ArrayList<>();
 

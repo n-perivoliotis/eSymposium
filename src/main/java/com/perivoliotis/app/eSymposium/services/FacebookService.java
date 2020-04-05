@@ -4,7 +4,7 @@ import com.perivoliotis.app.eSymposium.entities.facebook.FacebookPost;
 import com.perivoliotis.app.eSymposium.entities.facebook.FacebookUser;
 import com.perivoliotis.app.eSymposium.entities.facebook.UserPosts;
 import com.perivoliotis.app.eSymposium.repos.UserPostsRepository;
-import com.perivoliotis.app.eSymposium.utilities.FacebookUtils;
+import com.perivoliotis.app.eSymposium.integration.clients.FacebookClient;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
@@ -14,11 +14,14 @@ public class FacebookService {
     @Autowired
     UserPostsRepository userPostsRepository;
 
+    @Autowired
+    FacebookClient facebookClient;
+
     public void fetchAndStoreAllUsersPosts(List<FacebookUser> users) throws Exception{
 
         for (FacebookUser aUser : users){
 
-            UserPosts usersPosts = FacebookUtils.getAllFbPostsFromUser(aUser.getUsername().replace("@",""));
+            UserPosts usersPosts = facebookClient.getAllFbPostsFromUser(aUser.getUsername().replace("@",""));
 
             System.out.println("Showing fb home timeline.");
             for (FacebookPost post : usersPosts.getFacebookPosts()) {

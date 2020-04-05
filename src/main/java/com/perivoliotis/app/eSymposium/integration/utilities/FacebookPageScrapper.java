@@ -1,4 +1,4 @@
-package com.perivoliotis.app.eSymposium.utilities;
+package com.perivoliotis.app.eSymposium.integration.utilities;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
@@ -6,11 +6,15 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.util.List;
 import java.util.Properties;
 
 public class FacebookPageScrapper {
+
+    @Value("${webdriver.chrome.driver}")
+    private String chromeDriverPath;
 
     private WebDriver driver;
 
@@ -28,7 +32,7 @@ public class FacebookPageScrapper {
         options.addArguments("--disable-notifications");
 
         Properties props = System.getProperties();
-        props.setProperty("webdriver.chrome.driver", ConfigurationUtils.readFromProperties("webdriver.chrome.driver"));
+        props.setProperty("webdriver.chrome.driver", chromeDriverPath);
 
         this.driver = new ChromeDriver(options);
     }

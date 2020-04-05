@@ -1,19 +1,21 @@
-package com.perivoliotis.app.eSymposium.utilities;
+package com.perivoliotis.app.eSymposium.integration.clients;
 
 import com.perivoliotis.app.eSymposium.entities.twitter.Tweet;
 import com.perivoliotis.app.eSymposium.entities.twitter.TwitterUser;
 import com.perivoliotis.app.eSymposium.entities.twitter.UserTweets;
+import org.springframework.stereotype.Component;
 import twitter4j.*;
 
 import java.time.ZoneId;
 import java.util.*;
 
-public class TwitterUtils {
+@Component
+public class TwitterClient {
 
     // The factory instance is re-useable and thread safe.
-    private static Twitter twitter = TwitterFactory.getSingleton();
+    private final Twitter twitter = TwitterFactory.getSingleton();
 
-    public static UserTweets getAllTweetsFromUser(String username) throws TwitterException {
+    public UserTweets getAllTweetsFromUser(String username) throws TwitterException {
 
         int pageno = 1;
 
@@ -44,7 +46,7 @@ public class TwitterUtils {
         return userTweets;
     }
 
-    private static Set<Tweet> convertToTweet(List<Status> statuses){
+    private Set<Tweet> convertToTweet(List<Status> statuses){
 
         Set<Tweet> converted = new HashSet<>();
 
@@ -57,7 +59,7 @@ public class TwitterUtils {
         return converted;
     }
 
-    private static Tweet toTweet(Status status){
+    private Tweet toTweet(Status status){
 
         Tweet tweet = new Tweet();
 
@@ -92,7 +94,7 @@ public class TwitterUtils {
         return tweet;
     }
 
-    private static TwitterUser toUser(User user){
+    private TwitterUser toUser(User user){
 
         TwitterUser twitterUser = new TwitterUser();
 
@@ -112,7 +114,7 @@ public class TwitterUtils {
     }
 
 
-    private static void handleRateLimit(RateLimitStatus rateLimitStatus) {
+    private void handleRateLimit(RateLimitStatus rateLimitStatus) {
         int remaining = rateLimitStatus.getRemaining();
         if (remaining == 0) {
             int resetTime = rateLimitStatus.getSecondsUntilReset() + 5;
