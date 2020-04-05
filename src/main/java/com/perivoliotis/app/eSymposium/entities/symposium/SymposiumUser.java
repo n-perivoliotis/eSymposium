@@ -8,14 +8,16 @@ import lombok.ToString;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.math.BigInteger;
+
 @Getter
 @Setter
 @ToString
-@Document
+@Document(collection = "SymposiumUser")
 public class SymposiumUser {
 
     @Id
-    private long id;
+    private BigInteger _id;
 
     private String symposiumUsername;
 
