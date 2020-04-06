@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.math.BigInteger;
@@ -19,6 +20,7 @@ public class SymposiumUser {
     @Id
     private BigInteger _id;
 
+    @Indexed(unique = true)
     private String symposiumUsername;
 
     private TwitterUser twitterUser;

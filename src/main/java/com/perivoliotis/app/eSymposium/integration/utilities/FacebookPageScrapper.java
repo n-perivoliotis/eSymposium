@@ -7,10 +7,13 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.util.List;
 import java.util.Properties;
 
+@Component
 public class FacebookPageScrapper {
 
     @Value("${webdriver.chrome.driver}")
@@ -26,6 +29,7 @@ public class FacebookPageScrapper {
         return driver;
     }
 
+    @PostConstruct
     public void initializeWebDriver(){
 
         ChromeOptions options = new ChromeOptions();

@@ -7,6 +7,7 @@ import com.perivoliotis.app.eSymposium.integration.utilities.FacebookPageScrappe
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -25,13 +26,12 @@ public class FacebookClient {
     @Value("${login.facebook.personal.account.password}")
     private String password;
 
+    @Autowired
+    FacebookPageScrapper fbSrcapper;
+
     public UserPosts getAllFbPostsFromUser(String username) throws Exception{
 
         UserPosts userPosts = new UserPosts();
-
-        FacebookPageScrapper fbSrcapper = new FacebookPageScrapper();
-
-        fbSrcapper.initializeWebDriver();
 
         fbSrcapper.goToFbHomepage(email, password);
 

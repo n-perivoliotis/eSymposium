@@ -14,23 +14,23 @@ public class Main {
 
        FacebookService fbService = new FacebookService();
        List<FacebookUser> fbUsers = new ArrayList<>();
-        
+
        createFbUser("@tsiprasalexis", fbUsers);
        createFbUser("@cnninternational", fbUsers);
        createFbUser("@financialtimes", fbUsers);
        createFbUser("@GreekFreakOfficial", fbUsers);
        createFbUser("helenapaparizouofficial", fbUsers);
-       fbService.fetchAndStoreAllUsersPosts(fbUsers);
+       fbService.fetchAndStoreAllUserPosts(fbUsers.get(0));
 
        TwitterService twitterService = new TwitterService();
        List<TwitterUser> twitterUsers = new ArrayList<>();
-        
+
        createTwitterUser("atsipras", twitterUsers);
        createTwitterUser("cnni", twitterUsers);
        createTwitterUser("FinancialTimes", twitterUsers);
        createTwitterUser("Giannis_An34", twitterUsers);
-       createTwitterUser("paparizouhelena", twitterUsers); 
-       twitterService.fetchAndStoreAllUsersTweets(twitterUsers);
+       createTwitterUser("paparizouhelena", twitterUsers);
+       twitterService.fetchAndStoreAllUserTweets(twitterUsers.get(0));
 
        SymposiumService symposiumService = new SymposiumService();
        symposiumService.retrieveAndSaveSymposiumUser();

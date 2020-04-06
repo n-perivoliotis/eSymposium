@@ -1,18 +1,23 @@
 package com.perivoliotis.app.eSymposium.services;
 
+import com.perivoliotis.app.eSymposium.dtos.SymposiumUserDTO;
 import com.perivoliotis.app.eSymposium.entities.facebook.FacebookUser;
 import com.perivoliotis.app.eSymposium.entities.facebook.UserPosts;
 import com.perivoliotis.app.eSymposium.entities.symposium.SymposiumUser;
 import com.perivoliotis.app.eSymposium.entities.twitter.TwitterUser;
 import com.perivoliotis.app.eSymposium.entities.twitter.UserTweets;
+import com.perivoliotis.app.eSymposium.exceptions.UserAlreadyExists;
 import com.perivoliotis.app.eSymposium.repos.SymposiumUserRepository;
 import com.perivoliotis.app.eSymposium.repos.UserPostsRepository;
 import com.perivoliotis.app.eSymposium.repos.UserTweetsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Component
 public class SymposiumService {
 
     @Autowired
@@ -23,6 +28,16 @@ public class SymposiumService {
 
     @Autowired
     SymposiumUserRepository symposiumUserRepository;
+
+    public void persistUser(SymposiumUserDTO user) {
+
+        try {
+            symposiumUserRepository.save(user.asEntity());
+        } catch (DuplicateKeyException rex) {
+            throw new UserAlreadyExists(rex.getMessage());
+        }
+
+    }
 
     public void retrieveAndSaveSymposiumUser(){
 
