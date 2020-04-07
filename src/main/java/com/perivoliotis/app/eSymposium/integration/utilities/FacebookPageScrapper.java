@@ -21,10 +21,6 @@ public class FacebookPageScrapper {
 
     private WebDriver driver;
 
-    public void setDriver(WebDriver driver) {
-        this.driver = driver;
-    }
-
     public WebDriver getDriver() {
         return driver;
     }
@@ -68,7 +64,7 @@ public class FacebookPageScrapper {
         return driver.findElements(By.className("userContentWrapper"));
     }
 
-    public void scrollDownPage() throws Exception {
+    public void scrollDownPage() {
 
         JavascriptExecutor js = (JavascriptExecutor) driver;
 

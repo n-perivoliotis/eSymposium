@@ -4,5 +4,5 @@ import com.perivoliotis.app.eSymposium.entities.facebook.UserPosts;
 
 public interface UserPostsRepositoryCustom {
 
-    boolean saveOrUpdate(UserPosts userPosts);
+    void saveOrUpdate(UserPosts userPosts);
 }

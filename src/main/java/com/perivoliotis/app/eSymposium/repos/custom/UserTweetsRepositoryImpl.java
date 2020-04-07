@@ -1,7 +1,7 @@
 package com.perivoliotis.app.eSymposium.repos.custom;
 
-import com.mongodb.WriteResult;
 import com.perivoliotis.app.eSymposium.entities.twitter.UserTweets;
+import com.perivoliotis.app.eSymposium.exceptions.DatabaseOperationFailed;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -16,7 +16,7 @@ public class UserTweetsRepositoryImpl implements UserTweetsRepositoryCustom {
     MongoTemplate mongoTemplate;
 
     @Override
-    public boolean saveOrUpdate(UserTweets userTweets) {
+    public void saveOrUpdate(UserTweets userTweets) {
 
         Query query = new Query(Criteria.where("aUser.username").is(userTweets.getAUser().getUsername()));
         List<UserTweets> foundList  = mongoTemplate.find(query, UserTweets.class);
@@ -27,11 +27,12 @@ public class UserTweetsRepositoryImpl implements UserTweetsRepositoryCustom {
             foundList.get(0).getTweets().addAll(userTweets.getTweets());
             Update update = new Update();
             update.set("tweets", foundList.get(0).getTweets());
-            WriteResult result = mongoTemplate.updateFirst(query, update, UserTweets.class);
-            return result != null;
+            mongoTemplate.updateFirst(query, update, UserTweets.class);
         } else {
-            return false;
+            throw new DatabaseOperationFailed(
+                    String.format("Duplicate entries found in database for twitter user %s", userTweets.getAUser().getUsername())
+            );
         }
-        return true;
     }
+
 }

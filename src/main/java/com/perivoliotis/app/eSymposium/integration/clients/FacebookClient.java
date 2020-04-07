@@ -3,10 +3,14 @@ package com.perivoliotis.app.eSymposium.integration.clients;
 import com.perivoliotis.app.eSymposium.entities.facebook.FacebookPost;
 import com.perivoliotis.app.eSymposium.entities.facebook.FacebookUser;
 import com.perivoliotis.app.eSymposium.entities.facebook.UserPosts;
+import com.perivoliotis.app.eSymposium.exceptions.FacebookScrapperError;
 import com.perivoliotis.app.eSymposium.integration.utilities.FacebookPageScrapper;
+import com.perivoliotis.app.eSymposium.services.TwitterService;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -20,6 +24,8 @@ import java.util.regex.Pattern;
 @Component
 public class FacebookClient {
 
+    Logger logger = LoggerFactory.getLogger(FacebookClient.class);
+
     @Value("${login.facebook.personal.account.email}")
     private String email;
 
@@ -29,45 +35,50 @@ public class FacebookClient {
     @Autowired
     FacebookPageScrapper fbSrcapper;
 
-    public UserPosts getAllFbPostsFromUser(String username) throws Exception{
+    public UserPosts getAllFbPostsFromUser(String username) throws FacebookScrapperError {
 
-        UserPosts userPosts = new UserPosts();
+        try {
+            UserPosts userPosts = new UserPosts();
 
-        fbSrcapper.goToFbHomepage(email, password);
+            //TODO refactor that method
+            fbSrcapper.goToFbHomepage(email, password);
 
-        fbSrcapper.goToFbPageInfo(username);
+            fbSrcapper.goToFbPageInfo(username);
 
-        userPosts.setFbUser(fetchFbUser(fbSrcapper.getDriver()));
+            userPosts.setFbUser(fetchFbUser(fbSrcapper.getDriver()));
 
-        fbSrcapper.goToFbPagePosts(username);
+            fbSrcapper.goToFbPagePosts(username);
 
-        Set<FacebookPost> allUserPosts = new HashSet<>();
+            Set<FacebookPost> allUserPosts = new HashSet<>();
 
-        System.out.println("User " + username);
+            logger.debug("Start scrapping for user {}", username);
 
-        int scrolls = 0;
+            int scrolls = 0;
 
-        while (scrolls < 20){
+            while (scrolls < 20){
 
-            List<WebElement> posts = fbSrcapper.extractOncePosts();
+                List<WebElement> posts = fbSrcapper.extractOncePosts();
 
-            for(WebElement post:posts){
-                allUserPosts.add(toPost(post));
+                for(WebElement post:posts){
+                    allUserPosts.add(toPost(post));
+                }
+                fbSrcapper.scrollDownPage();
+                Thread.sleep(6000);
+                ++scrolls;
+                logger.debug("Ready for scroll: " + scrolls + " with total posts parsed: " + allUserPosts.size());
             }
-            fbSrcapper.scrollDownPage();
-            Thread.sleep(6000);
-            ++scrolls;
-            System.out.println("Ready for scroll: " + scrolls + " with total posts parsed: " + allUserPosts.size());
+
+            fbSrcapper.closeBrowser();
+
+            userPosts.setFacebookPosts(allUserPosts);
+            return userPosts;
+        } catch (Exception ex) {
+            throw new FacebookScrapperError(ex.getMessage());
         }
 
-        fbSrcapper.closeBrowser();
-
-        userPosts.setFacebookPosts(allUserPosts);
-
-        return userPosts;
     }
 
-    private FacebookUser fetchFbUser(WebDriver driver) throws Exception{
+    private FacebookUser fetchFbUser(WebDriver driver) {
 
         FacebookUser fbUser = new FacebookUser();
 
@@ -93,7 +104,7 @@ public class FacebookClient {
         return fbUser;
     }
 
-    private FacebookPost toPost(WebElement postHtml) throws Exception{
+    private FacebookPost toPost(WebElement postHtml) {
 
         FacebookPost fbPost = new FacebookPost();
 
@@ -131,7 +142,7 @@ public class FacebookClient {
         return fbPost;
     }
 
-    private int uiNumberToInt(String reac){
+    private int uiNumberToInt(String reac) {
 
         int result = 0;
 
@@ -158,7 +169,7 @@ public class FacebookClient {
         return result;
     }
 
-    private String keepUsefulInfo(String reac){
+    private String keepUsefulInfo(String reac) {
 
         Pattern pattern = Pattern.compile("\\d+ [Α-Ωα-ω]+\\.");
         Matcher matcher = pattern.matcher(reac);
@@ -175,7 +186,7 @@ public class FacebookClient {
         return reac;
     }
 
-    private String removeComments(String commentsNum){
+    private String removeComments(String commentsNum) {
 
         if(commentsNum.contains("σχόλια")){
             return commentsNum.replaceAll("σχόλια", "");
@@ -204,7 +215,7 @@ public class FacebookClient {
         }
     }
 
-    private List<String> findResource(List<WebElement> elements, String attribute){
+    private List<String> findResource(List<WebElement> elements, String attribute) {
 
         List<String> resource = new ArrayList<>();
 

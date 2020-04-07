@@ -10,6 +10,8 @@ import com.perivoliotis.app.eSymposium.exceptions.UserAlreadyExists;
 import com.perivoliotis.app.eSymposium.repos.SymposiumUserRepository;
 import com.perivoliotis.app.eSymposium.repos.UserPostsRepository;
 import com.perivoliotis.app.eSymposium.repos.UserTweetsRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Component;
@@ -19,6 +21,8 @@ import java.util.List;
 
 @Component
 public class SymposiumService {
+
+    Logger logger = LoggerFactory.getLogger(SymposiumService.class);
 
     @Autowired
     UserPostsRepository userPostsRepository;
@@ -39,6 +43,18 @@ public class SymposiumService {
 
     }
 
+    public SymposiumUserDTO findUser(String username) {
+
+        List<SymposiumUser> userList = symposiumUserRepository.findBySymposiumUsername(username);
+
+        SymposiumUserDTO result = new SymposiumUserDTO();
+        result.setSymposiumUsername(userList.get(0).getSymposiumUsername());
+        result.setFbUsername(userList.get(0).getFacebookUser().getUsername());
+        result.setTwitterUsername(userList.get(0).getTwitterUser().getUsername());
+
+        return result;
+    }
+
     public void retrieveAndSaveSymposiumUser(){
 
         List<FacebookUser> fbUsers = findAllFbUsers();
@@ -56,12 +72,8 @@ public class SymposiumService {
                     symposiumUser.setTwitterUser(twitterUser);
                     symposiumUser.setFacebookUser(fbUser);
                     symposiumUser.setSymposiumUsername(twitterUser.getProfileName());
-
-                    if (symposiumUserRepository.saveOrUpdate(symposiumUser)) {
-                        System.out.println("Database successfully updated");
-                    } else {
-                        System.out.println("Some error occurred while trying to update database");
-                    }
+                    symposiumUserRepository.saveOrUpdate(symposiumUser);
+                    logger.debug("Database successfully updated");
                 }
             }
         }
