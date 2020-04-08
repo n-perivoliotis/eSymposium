@@ -19,6 +19,16 @@ public class SymposiumUserDTO {
 
     private String twitterUsername;
 
+    public SymposiumUserDTO () {
+        super();
+    }
+
+    public SymposiumUserDTO (String symposiumUsername, String fbUsername, String twitterUsername) {
+        this.symposiumUsername = symposiumUsername;
+        this.fbUsername = fbUsername;
+        this.twitterUsername = twitterUsername;
+    }
+
     public boolean isValid() {
 
         return !StringUtils.isEmpty(this.fbUsername)

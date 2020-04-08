@@ -33,27 +33,8 @@ public class SymposiumService {
     @Autowired
     SymposiumUserRepository symposiumUserRepository;
 
-    public void persistUser(SymposiumUserDTO user) {
 
-        try {
-            symposiumUserRepository.save(user.asEntity());
-        } catch (DuplicateKeyException rex) {
-            throw new UserAlreadyExists(rex.getMessage());
-        }
 
-    }
-
-    public SymposiumUserDTO findUser(String username) {
-
-        List<SymposiumUser> userList = symposiumUserRepository.findBySymposiumUsername(username);
-
-        SymposiumUserDTO result = new SymposiumUserDTO();
-        result.setSymposiumUsername(userList.get(0).getSymposiumUsername());
-        result.setFbUsername(userList.get(0).getFacebookUser().getUsername());
-        result.setTwitterUsername(userList.get(0).getTwitterUser().getUsername());
-
-        return result;
-    }
 
     public void retrieveAndSaveSymposiumUser(){
 
