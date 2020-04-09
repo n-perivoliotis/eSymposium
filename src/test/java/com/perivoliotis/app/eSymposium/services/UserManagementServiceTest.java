@@ -2,20 +2,29 @@ package com.perivoliotis.app.eSymposium.services;
 
 import com.perivoliotis.app.eSymposium.dtos.SymposiumUserDTO;
 import com.perivoliotis.app.eSymposium.entities.facebook.FacebookUser;
+import com.perivoliotis.app.eSymposium.entities.facebook.UserPosts;
 import com.perivoliotis.app.eSymposium.entities.symposium.SymposiumUser;
 import com.perivoliotis.app.eSymposium.entities.twitter.TwitterUser;
+import com.perivoliotis.app.eSymposium.entities.twitter.UserTweets;
+import com.perivoliotis.app.eSymposium.exceptions.FacebookScrapperError;
 import com.perivoliotis.app.eSymposium.exceptions.InvalidDatabaseState;
+import com.perivoliotis.app.eSymposium.exceptions.SocialMediaInformationNotRetrieved;
 import com.perivoliotis.app.eSymposium.exceptions.UserAlreadyExists;
+import com.perivoliotis.app.eSymposium.integration.clients.FacebookClient;
+import com.perivoliotis.app.eSymposium.integration.clients.TwitterClient;
 import com.perivoliotis.app.eSymposium.repos.SymposiumUserRepository;
+import com.perivoliotis.app.eSymposium.repos.UserPostsRepository;
+import com.perivoliotis.app.eSymposium.repos.UserTweetsRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.dao.DuplicateKeyException;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
+import twitter4j.TwitterException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +36,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
 @RunWith(SpringRunner.class)
-@ContextConfiguration(classes = {UserManagementService.class})
+@SpringBootTest
 public class UserManagementServiceTest {
 
     @Autowired
@@ -35,6 +44,18 @@ public class UserManagementServiceTest {
 
     @MockBean
     SymposiumUserRepository symposiumUserRepository;
+
+    @MockBean
+    UserTweetsRepository userTweetsRepository;
+
+    @MockBean
+    UserPostsRepository userPostsRepository;
+
+    @MockBean
+    FacebookClient facebookClient;
+
+    @MockBean
+    TwitterClient twitterClient;
 
     @Before
     public void setUp() {
@@ -106,8 +127,7 @@ public class UserManagementServiceTest {
         s1.setFbUsername("aleksis_fb");
         s1.setTwitterUsername("aleksis_tw");
 
-        when(symposiumUserRepository.save(any(SymposiumUser.class)))
-                .thenThrow(DuplicateKeyException.class);
+        doThrow(DuplicateKeyException.class).when(symposiumUserRepository).save(any(SymposiumUser.class));
 
         // call service
         userManagementService.persistUser(s1);
@@ -148,6 +168,70 @@ public class UserManagementServiceTest {
 
         // call service
         userManagementService.findSymposiumUser(anyString());
+    }
+
+    @Test
+    public void when_tweets_and_posts_retrieved_should_be_saved() throws Exception {
+
+        //mock data
+        Mockito.when(twitterClient.getAllTweetsFromUser(anyString()))
+                .thenReturn(new UserTweets());
+
+        Mockito.when(facebookClient.getAllFbPostsFromUser(anyString()))
+                .thenReturn(new UserPosts());
+
+        Mockito.when(symposiumUserRepository.findBySymposiumUsername(anyString()))
+                .thenReturn(createMockSymposiumUserOne());
+
+        doNothing().when(userTweetsRepository).saveOrUpdate(any(UserTweets.class));
+        doNothing().when(userPostsRepository).saveOrUpdate(any(UserPosts.class));
+
+        // call service
+        userManagementService.synchronizeUser(anyString());
+
+        // assertions
+        verify(twitterClient, times(1)).getAllTweetsFromUser(anyString());
+        verify(facebookClient, times(1)).getAllFbPostsFromUser(anyString());
+        verify(userTweetsRepository, times(1)).saveOrUpdate(any(UserTweets.class));
+        verify(userPostsRepository, times(1)).saveOrUpdate(any(UserPosts.class));
+    }
+
+    @Test(expected = SocialMediaInformationNotRetrieved.class)
+    public void when_tweets_throw_exception_should_throw_exception() throws Exception {
+
+        //mock data
+        doThrow(TwitterException.class).when(twitterClient).getAllTweetsFromUser(anyString());
+
+        Mockito.when(facebookClient.getAllFbPostsFromUser(anyString()))
+                .thenReturn(new UserPosts());
+
+        Mockito.when(symposiumUserRepository.findBySymposiumUsername(anyString()))
+                .thenReturn(createMockSymposiumUserOne());
+
+        doNothing().when(userTweetsRepository).saveOrUpdate(any(UserTweets.class));
+        doNothing().when(userPostsRepository).saveOrUpdate(any(UserPosts.class));
+
+        // call service
+        userManagementService.synchronizeUser(anyString());
+    }
+
+    @Test(expected = SocialMediaInformationNotRetrieved.class)
+    public void when_posts_throw_exception_should_throw_exception() throws Exception {
+
+        //mock data
+        doThrow(FacebookScrapperError.class).when(facebookClient).getAllFbPostsFromUser(anyString());
+
+        Mockito.when(twitterClient.getAllTweetsFromUser(anyString()))
+                .thenReturn(new UserTweets());
+
+        Mockito.when(symposiumUserRepository.findBySymposiumUsername(anyString()))
+                .thenReturn(createMockSymposiumUserOne());
+
+        doNothing().when(userTweetsRepository).saveOrUpdate(any(UserTweets.class));
+        doNothing().when(userPostsRepository).saveOrUpdate(any(UserPosts.class));
+
+        // call service
+        userManagementService.synchronizeUser(anyString());
     }
 
     private List<SymposiumUser> createMockSymposiumUsersTwo() {

@@ -5,7 +5,6 @@ import com.perivoliotis.app.eSymposium.entities.facebook.FacebookUser;
 import com.perivoliotis.app.eSymposium.entities.facebook.UserPosts;
 import com.perivoliotis.app.eSymposium.exceptions.FacebookScrapperError;
 import com.perivoliotis.app.eSymposium.integration.utilities.FacebookPageScrapper;
-import com.perivoliotis.app.eSymposium.services.TwitterService;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
