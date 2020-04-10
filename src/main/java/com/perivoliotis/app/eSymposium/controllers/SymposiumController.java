@@ -30,7 +30,7 @@ public class SymposiumController {
                 userManagementService.persistUser(user);
                 return ResponseEntity.status(HttpStatus.CREATED).build();
             } catch (UserAlreadyExists ex) {
-                return ResponseEntity.status(HttpStatus.CONFLICT).build();
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
             }
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
