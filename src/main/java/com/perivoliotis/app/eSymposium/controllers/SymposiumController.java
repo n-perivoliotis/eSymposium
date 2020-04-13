@@ -4,6 +4,8 @@ import com.perivoliotis.app.eSymposium.dtos.SymposiumUserDTO;
 import com.perivoliotis.app.eSymposium.exceptions.SocialMediaInformationNotRetrieved;
 import com.perivoliotis.app.eSymposium.exceptions.UserAlreadyExists;
 import com.perivoliotis.app.eSymposium.services.UserManagementService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +15,8 @@ import java.util.List;
 
 @RestController
 public class SymposiumController {
+
+    Logger logger = LoggerFactory.getLogger(SymposiumController.class);
 
     @Autowired
     UserManagementService userManagementService;
@@ -43,6 +47,7 @@ public class SymposiumController {
             userManagementService.synchronizeUser(username);
             return ResponseEntity.status(HttpStatus.OK).build();
         } catch (SocialMediaInformationNotRetrieved ex) {
+            logger.error(ex.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 

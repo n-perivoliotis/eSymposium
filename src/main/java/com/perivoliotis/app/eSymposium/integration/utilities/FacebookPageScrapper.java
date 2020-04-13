@@ -68,11 +68,11 @@ public class FacebookPageScrapper {
     }
 
     public void goToFbPagePosts(String username){
-        driver.navigate().to("https://www.facebook.com/pg/" + username + "/posts/");
+        driver.navigate().to("https://www.facebook.com/pg/" + username.replace("@","") + "/posts/");
     }
 
     public void goToFbPageInfo(String username){
-        driver.navigate().to("https://www.facebook.com/pg/" + username + "/about/");
+        driver.navigate().to("https://www.facebook.com/pg/" + username.replace("@","") + "/about/");
     }
 
     public List<WebElement> extractOncePosts() {
@@ -102,7 +102,7 @@ public class FacebookPageScrapper {
         commonWebElement = driver.findElement(By.id("seo_h1_tag"));
         fbUser.setPageName(commonWebElement.getText());
 
-        commonWebElement = driver.findElement(By.id("u_0_y"));
+        commonWebElement = driver.findElement(By.id("u_0_w"));
         fbUser.setUsername(commonWebElement.getText());
 
         commonWebElement = driver.findElement(By.xpath("//div[@class='_50f4'][contains(text(),'Πληροφορίες')]/following-sibling::*"));
@@ -136,11 +136,11 @@ public class FacebookPageScrapper {
         commonWebElement = postHtml.findElement(By.className("userContent"));
         fbPost.setDescriptionText(commonWebElement.getText());
 
-        commonWebElement = postHtml.findElement(By.className("_1g5v"));
+        commonWebElement = postHtml.findElement(By.className("_81hb"));
 
         fbPost.setReactions(uiNumberToInt(commonWebElement.getText()));
 
-        commonWebElement = postHtml.findElement(By.className("_36_q"));
+        commonWebElement = postHtml.findElement(By.className("_42ft"));
         fbPost.setTotalComments(uiNumberToInt(removeComments(commonWebElement.getText())));
 
         commonWebElement = postHtml.findElement(By.tagName("abbr"));
