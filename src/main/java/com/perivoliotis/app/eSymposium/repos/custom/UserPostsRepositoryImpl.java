@@ -1,6 +1,5 @@
 package com.perivoliotis.app.eSymposium.repos.custom;
 
-import com.mongodb.WriteResult;
 import com.perivoliotis.app.eSymposium.entities.facebook.UserPosts;
 import com.perivoliotis.app.eSymposium.entities.twitter.UserTweets;
 import com.perivoliotis.app.eSymposium.exceptions.DatabaseOperationFailed;

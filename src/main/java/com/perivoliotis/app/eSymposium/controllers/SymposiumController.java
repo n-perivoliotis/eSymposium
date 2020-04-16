@@ -1,6 +1,7 @@
 package com.perivoliotis.app.eSymposium.controllers;
 
 import com.perivoliotis.app.eSymposium.dtos.SymposiumUserDTO;
+import com.perivoliotis.app.eSymposium.dtos.UserSocialDataDTO;
 import com.perivoliotis.app.eSymposium.exceptions.SocialMediaInformationNotRetrieved;
 import com.perivoliotis.app.eSymposium.exceptions.UserAlreadyExists;
 import com.perivoliotis.app.eSymposium.services.UserManagementService;
@@ -21,12 +22,12 @@ public class SymposiumController {
     @Autowired
     UserManagementService userManagementService;
 
-    @RequestMapping(value = "/allUsers", method = RequestMethod.GET)
+    @GetMapping(value = "/allUsers")
     public List<SymposiumUserDTO> allUsers() {
         return userManagementService.fetchAllUsers();
     }
 
-    @RequestMapping(value = "/addUser", method = RequestMethod.POST)
+    @PostMapping(value = "/addUser")
     public ResponseEntity<String> addUser(@RequestBody SymposiumUserDTO user) {
 
         if (user.isValid()) {
@@ -40,7 +41,7 @@ public class SymposiumController {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
-    @RequestMapping(value = "/synchronize/{username}", method = RequestMethod.PUT)
+    @PutMapping(value = "/synchronize/{username}")
     public ResponseEntity<String> synchronizeUser(@PathVariable String username) {
 
         try {
@@ -51,6 +52,12 @@ public class SymposiumController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 
+    }
+
+    @GetMapping(value = "/displayInfo/{username}")
+    public UserSocialDataDTO displayUser(@PathVariable String username) {
+
+       return userManagementService.displayUser(username);
     }
 
 }

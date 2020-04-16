@@ -1,6 +1,9 @@
 package com.perivoliotis.app.eSymposium.services;
 
 import com.perivoliotis.app.eSymposium.dtos.SymposiumUserDTO;
+import com.perivoliotis.app.eSymposium.dtos.facebook.FacebookPostDTO;
+import com.perivoliotis.app.eSymposium.dtos.facebook.FacebookUserDTO;
+import com.perivoliotis.app.eSymposium.entities.facebook.FacebookPost;
 import com.perivoliotis.app.eSymposium.entities.facebook.FacebookUser;
 import com.perivoliotis.app.eSymposium.entities.facebook.UserPosts;
 import com.perivoliotis.app.eSymposium.entities.symposium.SymposiumUser;
@@ -26,8 +29,7 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.test.context.junit4.SpringRunner;
 import twitter4j.TwitterException;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
@@ -56,11 +58,6 @@ public class UserManagementServiceTest {
 
     @MockBean
     TwitterClient twitterClient;
-
-    @Before
-    public void setUp() {
-
-    }
 
     @Test
     public void when_request_all_users_and_exist_many_all_should_return() {
@@ -234,6 +231,79 @@ public class UserManagementServiceTest {
         userManagementService.synchronizeUser(anyString());
     }
 
+    @Test
+    public void when_a_post_received_should_return_fbuser() {
+
+        //mock data
+        List<UserPosts> posts = createMockUserPostsOne();
+
+        // call service
+        FacebookUserDTO result = userManagementService.fbUserAsDTO(posts);
+
+        // assertions
+        assertThat(result.getUsername(), is("alexisTsipras"));
+        assertThat(result.getDescription(), is("This is prime minister twitter page"));
+        assertThat(result.getPlaceOfOrigin(), is("Athens"));
+    }
+
+    @Test(expected = InvalidDatabaseState.class)
+    public void when_no_post_received_should_throw_exception() {
+
+        //mock data
+        List<UserPosts> posts = new ArrayList<>();
+
+        // call service
+        userManagementService.fbUserAsDTO(posts);
+    }
+
+    @Test(expected = InvalidDatabaseState.class)
+    public void when_more_than_one_posts_received_should_throw_exception() {
+
+        //mock data
+        List<UserPosts> posts = createMockUserPostsTwo();
+
+        // call service
+        userManagementService.fbUserAsDTO(posts);
+    }
+
+    @Test
+    public void when_a_post_received_should_return_fbposts() {
+
+        //mock data
+        List<UserPosts> posts = createMockUserPostsOne();
+
+        // call service
+        Set<FacebookPostDTO> result = userManagementService.facebookPostAsDTO(posts);
+
+        // assertions
+        assertThat(result.size(), is(2));
+
+        FacebookPostDTO fp1 = result.stream().findFirst().orElse(null);
+        assertNotNull(fp1.getDescriptionText());
+        assertNotNull(fp1.getTotalComments());
+        assertNotNull(fp1.getReactions());
+    }
+
+    @Test(expected = InvalidDatabaseState.class)
+    public void when_no_post_received_should_throw_exception_on_fbposts() {
+
+        //mock data
+        List<UserPosts> posts = new ArrayList<>();
+
+        // call service
+        userManagementService.facebookPostAsDTO(posts);
+    }
+
+    @Test(expected = InvalidDatabaseState.class)
+    public void when_more_than_one_posts_received_should_throw_exception_on_fbposts() {
+
+        //mock data
+        List<UserPosts> posts = createMockUserPostsTwo();
+
+        // call service
+        userManagementService.facebookPostAsDTO(posts);
+    }
+
     private List<SymposiumUser> createMockSymposiumUsersTwo() {
 
         List<SymposiumUser> allUsers = new ArrayList<>();
@@ -278,6 +348,73 @@ public class UserManagementServiceTest {
         allUsers.add(s1);
 
         return allUsers;
+    }
+
+    private List<UserPosts> createMockUserPostsOne() {
+        List<UserPosts> posts = new ArrayList<>();
+
+        UserPosts userPost = new UserPosts();
+
+        FacebookUser fbUser = new FacebookUser();
+        fbUser.setUsername("alexisTsipras");
+        fbUser.setDescription("This is prime minister twitter page");
+        fbUser.setPlaceOfOrigin("Athens");
+
+        userPost.setFbUser(fbUser);
+        userPost.setFacebookPosts(createPosts());
+
+        posts.add(userPost);
+
+        return posts;
+    }
+
+    private List<UserPosts> createMockUserPostsTwo() {
+        List<UserPosts> posts = new ArrayList<>();
+
+        UserPosts userPost = new UserPosts();
+
+        FacebookUser fbUser = new FacebookUser();
+        fbUser.setUsername("alexisTsipras");
+        fbUser.setDescription("This is prime minister twitter page");
+        fbUser.setPlaceOfOrigin("Athens");
+
+        userPost.setFbUser(fbUser);
+        userPost.setFacebookPosts(createPosts());
+
+        UserPosts userPost1 = new UserPosts();
+
+        FacebookUser fbUser1 = new FacebookUser();
+        fbUser1.setUsername("alexisTsipras1");
+        fbUser1.setDescription("This is prime minister twitter page1");
+        fbUser1.setPlaceOfOrigin("Athens1");
+
+        userPost1.setFbUser(fbUser1);
+        userPost1.setFacebookPosts(createPosts());
+
+        posts.add(userPost);
+        posts.add(userPost1);
+
+        return posts;
+    }
+
+    private Set<FacebookPost> createPosts() {
+
+        Set<FacebookPost> result = new LinkedHashSet<>();
+
+        FacebookPost p1 = new FacebookPost();
+        p1.setDescriptionText("Hello from Australia");
+        p1.setTotalComments(123);
+        p1.setReactions(1222);
+
+        FacebookPost p2 = new FacebookPost();
+        p2.setDescriptionText("Hello from Austria");
+        p2.setTotalComments(1290);
+        p2.setReactions(1);
+
+        result.add(p1);
+        result.add(p2);
+
+        return result;
     }
 
 }
