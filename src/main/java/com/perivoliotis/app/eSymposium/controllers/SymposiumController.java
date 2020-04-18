@@ -2,7 +2,8 @@ package com.perivoliotis.app.eSymposium.controllers;
 
 import com.perivoliotis.app.eSymposium.dtos.SymposiumUserDTO;
 import com.perivoliotis.app.eSymposium.dtos.UserSocialDataDTO;
-import com.perivoliotis.app.eSymposium.exceptions.SocialMediaInformationNotRetrieved;
+import com.perivoliotis.app.eSymposium.exceptions.FacebookScrapperError;
+import com.perivoliotis.app.eSymposium.exceptions.InvalidUserInformation;
 import com.perivoliotis.app.eSymposium.exceptions.UserAlreadyExists;
 import com.perivoliotis.app.eSymposium.services.UserManagementService;
 import org.slf4j.Logger;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import twitter4j.TwitterException;
 
 import java.util.List;
 
@@ -42,16 +44,15 @@ public class SymposiumController {
     }
 
     @PutMapping(value = "/synchronize/{username}")
-    public ResponseEntity<String> synchronizeUser(@PathVariable String username) {
+    public ResponseEntity<String> synchronizeUser(@PathVariable String username) throws TwitterException, FacebookScrapperError {
 
         try {
             userManagementService.synchronizeUser(username);
             return ResponseEntity.status(HttpStatus.OK).build();
-        } catch (SocialMediaInformationNotRetrieved ex) {
+        } catch (InvalidUserInformation ex) {
             logger.error(ex.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-
     }
 
     @GetMapping(value = "/displayInfo/{username}")

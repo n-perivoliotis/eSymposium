@@ -11,7 +11,7 @@ import com.perivoliotis.app.eSymposium.entities.symposium.SymposiumUser;
 import com.perivoliotis.app.eSymposium.entities.twitter.UserTweets;
 import com.perivoliotis.app.eSymposium.exceptions.FacebookScrapperError;
 import com.perivoliotis.app.eSymposium.exceptions.InvalidDatabaseState;
-import com.perivoliotis.app.eSymposium.exceptions.SocialMediaInformationNotRetrieved;
+import com.perivoliotis.app.eSymposium.exceptions.InvalidUserInformation;
 import com.perivoliotis.app.eSymposium.exceptions.UserAlreadyExists;
 import com.perivoliotis.app.eSymposium.integration.clients.FacebookClient;
 import com.perivoliotis.app.eSymposium.integration.clients.TwitterClient;
@@ -77,12 +77,11 @@ public class UserManagementService {
 
     }
 
-    public void synchronizeUser(String username) throws SocialMediaInformationNotRetrieved {
+    public void synchronizeUser(String username) throws TwitterException, FacebookScrapperError, InvalidUserInformation {
 
         SymposiumUserDTO user = findSymposiumUser(username);
 
-        try {
-
+        if (user.isValid()) {
             UserTweets usersTweets = twitterClient.getAllTweetsFromUser(user.getTwitterUsername());
             logger.debug("Successfully received tweets for user {}", user.getSymposiumUsername());
             userTweetsRepository.saveOrUpdate(usersTweets);
@@ -92,13 +91,8 @@ public class UserManagementService {
             logger.debug("Successfully received posts for user {}", user.getSymposiumUsername());
             userPostsRepository.saveOrUpdate(usersPosts);
             logger.debug("Database successfully updated");
-
-        } catch (TwitterException tex) {
-            logger.error("An error occurred while trying to receive tweets of user {}", user.getSymposiumUsername());
-            throw new SocialMediaInformationNotRetrieved(tex.getMessage());
-        } catch (FacebookScrapperError ex) {
-            logger.error("An error occurred while trying to receive posts of user {}", user.getSymposiumUsername());
-            throw new SocialMediaInformationNotRetrieved(ex.getMessage());
+        } else {
+            throw new InvalidUserInformation(String.format("Symposium User retrieved for %s contains invalid information ", username));
         }
 
     }

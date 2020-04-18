@@ -40,6 +40,7 @@ public class FacebookPageScrapper {
 
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--disable-notifications");
+        options.addArguments("headless");
 
         Properties props = System.getProperties();
         props.setProperty("webdriver.chrome.driver", chromeDriverPath);

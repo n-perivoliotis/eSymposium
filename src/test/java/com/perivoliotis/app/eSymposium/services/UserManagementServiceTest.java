@@ -15,7 +15,7 @@ import com.perivoliotis.app.eSymposium.entities.twitter.TwitterUser;
 import com.perivoliotis.app.eSymposium.entities.twitter.UserTweets;
 import com.perivoliotis.app.eSymposium.exceptions.FacebookScrapperError;
 import com.perivoliotis.app.eSymposium.exceptions.InvalidDatabaseState;
-import com.perivoliotis.app.eSymposium.exceptions.SocialMediaInformationNotRetrieved;
+import com.perivoliotis.app.eSymposium.exceptions.InvalidUserInformation;
 import com.perivoliotis.app.eSymposium.exceptions.UserAlreadyExists;
 import com.perivoliotis.app.eSymposium.integration.clients.FacebookClient;
 import com.perivoliotis.app.eSymposium.integration.clients.TwitterClient;
@@ -199,7 +199,7 @@ public class UserManagementServiceTest {
         verify(userPostsRepository, times(1)).saveOrUpdate(any(UserPosts.class));
     }
 
-    @Test(expected = SocialMediaInformationNotRetrieved.class)
+    @Test(expected = TwitterException.class)
     public void when_tweets_throw_exception_should_throw_exception() throws Exception {
 
         //mock data
@@ -218,7 +218,7 @@ public class UserManagementServiceTest {
         userManagementService.synchronizeUser(anyString());
     }
 
-    @Test(expected = SocialMediaInformationNotRetrieved.class)
+    @Test(expected = FacebookScrapperError.class)
     public void when_posts_throw_exception_should_throw_exception() throws Exception {
 
         //mock data
